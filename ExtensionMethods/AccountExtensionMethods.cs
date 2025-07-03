@@ -6,9 +6,8 @@ namespace BankRestApi.ExtensionMethods;
 public static class AccountExtensionMethods
 {
     public static AccountResult<Account> CreateResult(this BankRestApi.Models.Account account) =>
-        new(
-            HttpStatusCode.OK,
-            result: new Account
+        AccountResult<Account>.Success(
+            new Account
             {
                 Id = account.Id,
                 Name = account.Name,
