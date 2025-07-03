@@ -2,33 +2,18 @@
 
 namespace BankRestApi.Models.DTOs;
 
-public class AccountResult<T>
+public class AccountResult<T> where T : class
 {
-    public HttpStatusCode StatusCode { get; }
+    public Error? Error { get; }
     public T? Result { get; }
-    public string ErrorMessage { get; }
-    public bool IsSuccess => string.IsNullOrEmpty(ErrorMessage);
+    public bool IsSuccess => Error is null;
 
-    public AccountResult(HttpStatusCode statusCode, T result, string errorMessage = "")
+    protected AccountResult(T? result, Error? error)
     {
         Result = result;
-        StatusCode = statusCode;
-        ErrorMessage = errorMessage;
-    }
-    public AccountResult(HttpStatusCode statusCode, string errorMessage)
-    {
-        StatusCode = statusCode;
-        ErrorMessage = errorMessage;
+        Error = error;
     }
 
-    public static AccountResult<T> GreaterThanZeroError() =>
-        new(HttpStatusCode.BadRequest, "Please enter valid decimal amount greater than zero.");
-    public static AccountResult<T> NotFoundError() =>
-        new(HttpStatusCode.NotFound, "No account found with that ID.");
-    public static AccountResult<T> InsufficientFundsError() =>
-        new(HttpStatusCode.BadRequest, "Insufficient funds.");
-    public static AccountResult<T> EmptyNameError() =>
-        new(HttpStatusCode.BadRequest, "Name cannot be empty or whitespace.");
-    public static AccountResult<T> DuplicateIdError() =>
-        new(HttpStatusCode.BadRequest, "Duplicate ids given for sender and recipient.");
+    public static AccountResult<T> Success(T result) => new(result, null);
+    public static AccountResult<T> Failure(Error error) => new(null, error);
 }
