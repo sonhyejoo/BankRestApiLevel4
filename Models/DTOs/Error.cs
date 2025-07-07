@@ -2,6 +2,7 @@
 
 public class Error(ErrorCode code, string message)
 {
+    public ErrorCode Code { get; } = code;
     public string Message { get; } = message;
     public static Error NonpositiveAmount() =>
         new Error(ErrorCode.NonpositiveAmount, "Please enter valid decimal amount greater than zero.");
