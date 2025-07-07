@@ -2,6 +2,7 @@
 using BankRestApi.ExtensionMethods;
 using BankRestApi.Models;
 using BankRestApi.Models.DTOs;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Account = BankRestApi.Models.DTOs.Account;
 
@@ -43,7 +44,7 @@ public class AccountService : IAccountService
 
         if (foundAccount is null)
         {
-            return AccountResult<Account>.NotFoundError();
+            return AccountResult<Account>.Failure(Error.NotFound());
         }
         
         return foundAccount.CreateResult();
@@ -55,12 +56,12 @@ public class AccountService : IAccountService
 
         if (foundAccount is null)
         {
-            return AccountResult<Account>.NotFoundError();
+            return AccountResult<Account>.Failure(Error.NotFound());
         }
 
         if (request.Amount <= 0)
         {
-            return AccountResult<Account>.GreaterThanZeroError();
+            return AccountResult<Account>.Failure(Error.NonpositiveAmount());
         }
         
         foundAccount.Balance += request.Amount;
@@ -68,9 +69,9 @@ public class AccountService : IAccountService
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException ex) 
+        catch (DbUpdateConcurrencyException ex)
         {
-            return new AccountResult<Account>(HttpStatusCode.InternalServerError, ex.Message);
+            return AccountResult<Account>.Failure(Error.InternalServerError());
         }
         
         return foundAccount.CreateResult();
@@ -82,17 +83,17 @@ public class AccountService : IAccountService
 
         if (foundAccount is null)
         {
-            return AccountResult<Account>.NotFoundError();
+            return AccountResult<Account>.Failure(Error.NotFound());
         }
 
         if (request.Amount <= 0)
         {
-            return AccountResult<Account>.GreaterThanZeroError();
+            return AccountResult<Account>.Failure(Error.NonpositiveAmount());
         }
         
         if (request.Amount > foundAccount.Balance)
         {
-            return AccountResult<Account>.InsufficientFundsError();
+            return AccountResult<Account>.Failure(Error.InsufficientFunds());
         }
         
         foundAccount.Balance -= request.Amount;
@@ -100,9 +101,9 @@ public class AccountService : IAccountService
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException ex) 
+        catch (DbUpdateConcurrencyException ex)
         {
-            return new AccountResult<Account>(HttpStatusCode.InternalServerError, ex.Message);
+            return AccountResult<Account>.Failure(Error.InternalServerError());
         }
         
         return foundAccount.CreateResult();
@@ -114,7 +115,7 @@ public class AccountService : IAccountService
 
         if (senderId == recipientId)
         {
-            return AccountResult<TransferDetails>.DuplicateIdError();
+            return AccountResult<TransferDetails>.Failure(Error.DuplicateId());
         }
         
         var sender = await  _context.Accounts.FindAsync(senderId);
@@ -122,17 +123,17 @@ public class AccountService : IAccountService
 
         if (sender is null  || recipient is null)
         {
-            return AccountResult<TransferDetails>.NotFoundError();
+            return AccountResult<TransferDetails>.Failure(Error.NotFound());
         }
 
         if (amount <= 0)
         {
-            return AccountResult<TransferDetails>.GreaterThanZeroError();
+            return AccountResult<TransferDetails>.Failure(Error.NonpositiveAmount());
         }
         
         if (amount > sender.Balance)
         {
-            return AccountResult<TransferDetails>.InsufficientFundsError();
+            return AccountResult<TransferDetails>.Failure(Error.InsufficientFunds());
         }
         
         sender.Balance -= request.Amount;
@@ -141,9 +142,9 @@ public class AccountService : IAccountService
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException ex) 
+        catch (DbUpdateConcurrencyException ex)
         {
-            return new AccountResult<TransferDetails>(HttpStatusCode.InternalServerError, ex.Message);
+            return AccountResult<TransferDetails>.Failure(Error.InternalServerError());
         }
         var senderDto = new Account
         {
@@ -158,6 +159,6 @@ public class AccountService : IAccountService
             Balance = recipient.Balance
         };
         
-        return new AccountResult<TransferDetails>(HttpStatusCode.OK, new TransferDetails(senderDto, recipientDto));
+        return AccountResult<TransferDetails>.Success(new TransferDetails(senderDto, recipientDto));
     }
 }

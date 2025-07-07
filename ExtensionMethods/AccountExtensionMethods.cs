@@ -1,5 +1,4 @@
-﻿usings System.Net;
-using BankRestApi.Models.DTOs;
+﻿using BankRestApi.Models.DTOs;
 
 namespace BankRestApi.ExtensionMethods;
 
