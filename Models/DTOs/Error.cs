@@ -1,18 +1,18 @@
 ﻿namespace BankRestApi.Models.DTOs;
 
-public class Error(string message)
+public class Error(ErrorCode code, string message)
 {
     public string Message { get; } = message;
     public static Error NonpositiveAmount() =>
-        new Error("Please enter valid decimal amount greater than zero.");
+        new Error(ErrorCode.NonpositiveAmount, "Please enter valid decimal amount greater than zero.");
     public static Error NotFound() =>
-        new Error("No account found with that ID.");
+        new Error(ErrorCode.NotFound,"No account found with that ID.");
     public static Error InsufficientFunds() =>
-        new Error("Insufficient funds.");
+        new Error(ErrorCode.InsufficientFunds,"Insufficient funds.");
     public static Error EmptyName() =>
-        new Error("Name cannot be empty or whitespace.");
+        new Error(ErrorCode.EmptyName,"Name cannot be empty or whitespace.");
     public static Error DuplicateId() =>
-        new Error("Duplicate ids given for sender and recipient.");
+        new Error(ErrorCode.DuplicateId,"Duplicate ids given for sender and recipient.");
     public static Error InternalServerError() =>
-        new Error("The server was unable to complete your request. Please try again later.");
+        new Error(ErrorCode.InternalServerError,"The server was unable to complete your request. Please try again later.");
 }
