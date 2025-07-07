@@ -36,7 +36,7 @@ namespace BankRestApi.Controllers
 
             if (!result.IsSuccess)
             {
-                return NotFound(result.Error.M);
+                return NotFound(result.Error);
             }
 
             return Ok(result.Result);
@@ -82,8 +82,8 @@ namespace BankRestApi.Controllers
             var result = await _service.Deposit(request);
             return result.IsSuccess switch
             {
-                false when result.StatusCode is HttpStatusCode.NotFound => NotFound(result.ErrorMessage),
-                false => BadRequest(result.ErrorMessage),
+                false when result.Error.Code is ErrorCode.NotFound => NotFound(result.Error),
+                false => BadRequest(result.Error),
                 _ => Ok(result.Result)
             };
         }
@@ -106,8 +106,8 @@ namespace BankRestApi.Controllers
             var result = await _service.Withdraw(request);
             return result.IsSuccess switch
             {
-                false when result.StatusCode is HttpStatusCode.NotFound => NotFound(result.ErrorMessage),
-                false => BadRequest(result.ErrorMessage),
+                false when result.Error.Code is ErrorCode.NotFound => NotFound(result.Error),
+                false => BadRequest(result.Error),
                 _ => Ok(result.Result)
             };
         }
@@ -128,8 +128,8 @@ namespace BankRestApi.Controllers
             var result = await _service.Transfer(request);
             return result.IsSuccess switch
             {
-                false when result.StatusCode is HttpStatusCode.NotFound => NotFound(result.ErrorMessage),
-                false => BadRequest(result.ErrorMessage),
+                false when result.Error.Code is ErrorCode.NotFound => NotFound(result.Error),
+                false => BadRequest(result.Error),
                 _ => Ok(result.Result)
             };
         }
