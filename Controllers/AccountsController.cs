@@ -36,7 +36,7 @@ namespace BankRestApi.Controllers
 
             if (!result.IsSuccess)
             {
-                return NotFound(result.ErrorMessage);
+                return NotFound(result.Error.M);
             }
 
             return Ok(result.Result);
@@ -51,13 +51,13 @@ namespace BankRestApi.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created, Type=typeof(Account))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type=typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type=typeof(Error))]
         public async Task<ActionResult<Account>> CreateAccount(CreateAccountRequest request)
         {
             var result = await _service.Create(request);
             if (!result.IsSuccess)
             {
-                return BadRequest(result.ErrorMessage );
+                return BadRequest(result.Error);
             }
             var createdAccount = result.Result;
 

@@ -21,7 +21,7 @@ public class AccountService : IAccountService
         var name = request.Name;
         if (string.IsNullOrEmpty(name) || string.IsNullOrWhiteSpace(name))
         {
-            return AccountResult<Account>.EmptyNameError();
+            return AccountResult<Account>.Failure(Error.EmptyName());
         }
 
         var accountToAdd = new Models.Account
