@@ -1,5 +1,5 @@
 ﻿namespace BankRestApi.Models.DTOs;
 
-public record FreeCurrencyApiResponse(
+public record CurrencyApiResponse(
     Dictionary<string, decimal> data
     );
