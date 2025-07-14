@@ -152,7 +152,8 @@ namespace BankRestApi.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type=typeof(string))]
         public async Task<ActionResult<ConvertedBalances>> GetConvertedBalances(Guid id, ConvertRequest request)
         {
-            var result = await _service.ConvertBalances(new ConvertCommand(id, request.Currencies));
+            var convertCommand = new ConvertCommand(id, request.Currencies);
+            var result = await _service.ConvertBalances(convertCommand);
             return result.IsSuccess switch
             {
                 false when result.StatusCode is HttpStatusCode.NotFound => NotFound(result.ErrorMessage),

@@ -165,7 +165,10 @@ public class AccountService : IAccountService
         {
             balances.Add(currency, balanceInUsd * rate);
         }
+
+        var convertedBalances =
+            new ConvertedBalances(foundAccount.Id, foundAccount.Name, foundAccount.Balance, balances);
         
-        return new AccountResult<ConvertedBalances>(HttpStatusCode.OK, new ConvertedBalances(foundAccount.Id, foundAccount.Name, foundAccount.Balance, balances));
+        return new AccountResult<ConvertedBalances>(HttpStatusCode.OK, convertedBalances);
     }
 }
